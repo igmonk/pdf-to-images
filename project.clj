@@ -7,7 +7,8 @@
   :license {:name "Apache License, Version 2.0"
             :url "http://www.apache.org/licenses/LICENSE-2.0"}
 
-  :dependencies [[org.clojure/clojure "1.8.0"]]
+  :dependencies [[org.clojure/clojure "1.8.0"]
+                 [org.apache.pdfbox/pdfbox "2.0.0"]]
 
   :main ^:skip-aot pdf-to-images.core
 

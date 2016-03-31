@@ -1,5 +1,7 @@
 (ns pdf-to-images.core
-  (:gen-class))
+  (:gen-class)
+  (:import [org.apache.pdfbox.pdmodel.PDDocument]
+           [org.apache.pdfbox.util.PDFImageWriter]))
 
 (defn -main
   "I don't do a whole lot ... yet."
