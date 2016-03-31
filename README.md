@@ -1,10 +1,12 @@
 # pdf-to-images
 
-FIXME: description
+Clojure wrapper for the PDFBox that converts a given page range of a PDF document to bitmap images.
 
 ## Installation
 
-Download from http://example.com/FIXME.
+Download from https://github.com/igor-moiseyenko/pdf-to-images.
+
+## To be updated...
 
 ## Usage
 
@@ -32,5 +34,4 @@ FIXME: listing of options this app accepts.
 
 Copyright © 2016 FIXME
 
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Distributed under the Apache License, Version 2.0.
