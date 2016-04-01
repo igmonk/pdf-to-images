@@ -17,16 +17,16 @@
            (last intersection-vec))))
 
 (defn pdf-to-images
-  [filename & opts]
+  [filename
+   & {:keys [start-page end-page dpi ext]
+      :or {start-page 0
+           end-page (Integer/MAX_VALUE)
+           dpi 300
+           ext "png"}}]
   (let [pd-document (PDDocument/load (io/file filename))
         pdf-renderer (PDFRenderer. pd-document)
         pages (vec (.getPages pd-document))
         pages-count (count pages)
-        {:keys [start-page end-page dpi ext]
-         :or {start-page 0
-              end-page pages-count
-              dpi 300
-              ext "png"}} opts
         page-range (range-intersection-for-border-pairs [[0 pages-count]
                                                          [start-page end-page]])]
     (try
