@@ -34,4 +34,4 @@ FIXME: listing of options this app accepts.
 
 Copyright © 2016 FIXME
 
-Distributed under the Apache License, Version 2.0.
+Distributed under the Eclipse Public License version 1.0.
