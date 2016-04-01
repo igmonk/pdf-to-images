@@ -17,12 +17,10 @@
            (last intersection-vec))))
 
 (defn pdf-to-images
-  [filename
-   & {:keys [start-page end-page dpi ext]
-      :or {start-page 0
-           end-page (Integer/MAX_VALUE)
-           dpi 300
-           ext "png"}}]
+  [filename & {:keys [start-page end-page dpi ext]
+               :or {start-page 0
+                    end-page (Integer/MAX_VALUE)
+                    dpi 300 ext "png"}}]
   (let [pd-document (PDDocument/load (io/file filename))
         pdf-renderer (PDFRenderer. pd-document)
         pages (vec (.getPages pd-document))
