@@ -11,8 +11,6 @@
                  [org.apache.pdfbox/pdfbox "2.0.0"]
                  [org.apache.pdfbox/pdfbox-tools "2.0.0"]]
 
-  :main ^:skip-aot pdf-to-images.core
-
   :target-path "target/%s"
 
   :profiles {:uberjar {:aot :all}})
