@@ -1,5 +1,4 @@
 (ns pdf-to-images.core
-  (:gen-class)
   (:require [clojure.java.io :as io])
   (:import [org.apache.pdfbox.pdmodel PDDocument]
            [org.apache.pdfbox.rendering PDFRenderer]
@@ -41,13 +40,9 @@
         (map
           (fn [page-index]
             (let [image (.renderImageWithDPI pdf-renderer page-index dpi ImageType/RGB)
-                  image-filename (str filename "-" page-index "." ext)]
-              (ImageIOUtil/writeImage image image-filename dpi)
-              image-filename))
+                  image-pathname (str pathname "-" page-index "." ext)]
+              (ImageIOUtil/writeImage image image-pathname dpi)
+              image-pathname))
           page-range))
       (finally
         (if (not= pd-document nil) (.close pd-document))))))
-
-(defn -main
-  [& args]
-  (prn (pdf-to-images (first args) :start-page 0 :end-page 1 :dpi 100 :ext "jpg")))
