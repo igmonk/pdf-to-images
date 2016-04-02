@@ -30,7 +30,7 @@ Basic usage example:
 ;; "path-to-image-n"
 ```
 
-Options using example:
+With-options usage example:
 
 ```clojure
 (let [image-paths (pdf-to-images "path-to-pdf" :start-page 0 :end-page 1 :dpi 100 :ext jpg)]
