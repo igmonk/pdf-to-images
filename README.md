@@ -1,6 +1,6 @@
 # pdf-to-images
 
-Clojure wrapper for the PDFBox that converts a given page range of a PDF document to bitmap images.
+Clojure wrapper for the PDFBox that converts a page range of a PDF document to images.
 
 ## Installation
 

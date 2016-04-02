@@ -1,6 +1,6 @@
 (defproject pdf-to-images "0.1.0"
 
-  :description "Clojure wrapper for the PDFBox that converts a given page range of a PDF document to bitmap images."
+  :description "Clojure wrapper for the PDFBox that converts a page range of a PDF document to images."
 
   :url "https://github.com/igor-moiseyenko/pdf-to-images"
 
