@@ -6,7 +6,7 @@ Clojure wrapper for the PDFBox that converts a page range of a PDF document to i
 
 Add the following dependency to your `project.clj` file:
 
-    [pdf-to-images "0.1.0"]
+    [pdf-to-images "0.1.1"]
 
 ## Usage
 
