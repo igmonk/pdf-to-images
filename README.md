@@ -33,7 +33,7 @@ Basic usage example:
 With-options usage example:
 
 ```clojure
-(let [image-paths (pdf-to-images "path-to-pdf" :start-page 0 :end-page 1 :dpi 100 :ext jpg)]
+(let [image-paths (pdf-to-images "path-to-pdf" :start-page 0 :end-page 1 :dpi 100 :ext "jpg")]
   (prn (str "Images count: " (count images-paths)))
   (map prn image-paths))
 
