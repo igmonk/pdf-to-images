@@ -1,4 +1,4 @@
-(defproject pdf-to-images "0.1.0-SNAPSHOT"
+(defproject pdf-to-images "0.1.0"
 
   :description "Clojure wrapper for the PDFBox that converts a given page range of a PDF document to bitmap images."
 
