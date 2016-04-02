@@ -17,11 +17,20 @@
            (last intersection-vec))))
 
 (defn pdf-to-images
-  [filename & {:keys [start-page end-page dpi ext]
+  "Converts a page range of a PDF document to images.
+  Returns a sequence consisting of the pathname strings of the created images.
+
+  Options are key-value pairs and may be one of:
+    :start-page - The start page, defaults to 0
+    :end-page   - The end page, defaults to Integer/MAX_VALUE
+    :dpi        - Screen resolution, defaults to 300
+    :ext        - The target file format, defaults to png"
+  [pathname & {:keys [start-page end-page dpi ext]
                :or {start-page 0
                     end-page (Integer/MAX_VALUE)
-                    dpi 300 ext "png"}}]
-  (let [pd-document (PDDocument/load (io/file filename))
+                    dpi 300
+                    ext "png"}}]
+  (let [pd-document (PDDocument/load (io/file pathname))
         pdf-renderer (PDFRenderer. pd-document)
         pages (vec (.getPages pd-document))
         pages-count (count pages)
@@ -40,6 +49,5 @@
         (if (not= pd-document nil) (.close pd-document))))))
 
 (defn -main
-  "I don't do a whole lot ... yet."
   [& args]
   (prn (pdf-to-images (first args) :start-page 0 :end-page 1 :dpi 100 :ext "jpg")))
