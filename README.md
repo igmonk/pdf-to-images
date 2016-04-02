@@ -27,7 +27,7 @@ Basic usage example:
 ;; "path-to-image-0"
 ;; "path-to-image-1"
 ;; ...
-;; "path-to-image-n"
+;; "path-to-image-n-1"
 ```
 
 With-options usage example:
