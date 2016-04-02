@@ -13,7 +13,8 @@ Add the following dependency to your `project.clj` file:
 Import namespace example:
 
 ```clojure
-(:require [pdf-to-images :refer :all])
+(ns hello-world.core
+  (:require [pdf-to-images :refer :all]))
 ```
 
 Basic usage example:
