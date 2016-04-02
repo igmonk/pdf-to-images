@@ -4,34 +4,45 @@ Clojure wrapper for the PDFBox that converts a given page range of a PDF documen
 
 ## Installation
 
-Download from https://github.com/igor-moiseyenko/pdf-to-images.
+Add the following dependency to your `project.clj` file:
 
-## To be updated...
+    [pdf-to-images "0.1.0"]
 
 ## Usage
 
-FIXME: explanation
+Import namespace example:
 
-    $ java -jar pdf-to-images-0.1.0-standalone.jar [args]
+```clojure
+(:require [pdf-to-images :refer :all])
+```
 
-## Options
+Basic usage example:
 
-FIXME: listing of options this app accepts.
+```clojure
+(let [image-paths (pdf-to-images "path-to-pdf")]
+  (prn (str "Images count: " (count image-paths)))
+  (map prn image-paths))
 
-## Examples
+;; "Images count: n"
+;; "path-to-image-0"
+;; "path-to-image-1"
+;; ...
+;; "path-to-image-n"
+```
 
-...
+Options using example:
 
-### Bugs
+```clojure
+(let [image-paths (pdf-to-images "path-to-pdf" :start-page 0 :end-page 1 :dpi 100 :ext jpg)]
+  (prn (str "Images count: " (count images-paths)))
+  (map prn image-paths))
 
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
+;; "Images count: 1"
+;; "path-to-image-0"
+```
 
 ## License
 
-Copyright © 2016 FIXME
+Copyright © 2016 Igor Moiseyenko
 
 Distributed under the Eclipse Public License version 1.0.
