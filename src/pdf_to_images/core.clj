@@ -3,7 +3,8 @@
   (:import [org.apache.pdfbox.pdmodel PDDocument]
            [org.apache.pdfbox.rendering PDFRenderer]
            [org.apache.pdfbox.rendering ImageType]
-           [org.apache.pdfbox.tools.imageio ImageIOUtil]))
+           [org.apache.pdfbox.tools.imageio ImageIOUtil]
+           (java.io ByteArrayOutputStream)))
 
 (defn- range-intersection-for-border-pairs
   [range-border-pairs]
@@ -15,34 +16,59 @@
     (range (first intersection-vec)
            (last intersection-vec))))
 
+(defn image-to-image [{image :image}] image)
+
+(defn image-to-byte-array
+  [{image :image ext :ext dpi :dpi}]
+  (let [baos (ByteArrayOutputStream.)]
+    (try
+      (ImageIOUtil/writeImage image ext baos dpi)
+      (.flush baos)
+      (.toByteArray baos)
+      (finally
+        (if (not= baos nil) (.close baos))))))
+
+(defn image-to-file
+  [{image :image image-index :image-index ext :ext dpi :dpi base-path :base-path}]
+  (let [image-pathname (str base-path "-" image-index "." ext)]
+    (ImageIOUtil/writeImage image image-pathname dpi)
+    image-pathname))
+
 (defn pdf-to-images
-  "Converts a page range of a PDF document to images.
-  Returns a sequence consisting of the pathname strings of the created images.
+  "Converts a page range of a PDF document to images using one of the defined image handlers
+  (image to image, image to byte array or image to file) or the custom one.
+  Returns a sequence consisting of the images, byte arrays or pathnames depending on the
+  selected image handler.
 
   Options are key-value pairs and may be one of:
     :start-page - The start page, defaults to 0
     :end-page   - The end page, defaults to Integer/MAX_VALUE
     :dpi        - Screen resolution, defaults to 300
-    :ext        - The target file format, defaults to png"
-  [pathname & {:keys [start-page end-page dpi ext]
-               :or {start-page 0
-                    end-page (Integer/MAX_VALUE)
-                    dpi 300
-                    ext "png"}}]
-  (let [pd-document (PDDocument/load (io/file pathname))
+    :ext        - The target file format, defaults to png
+    :pathname   - Path to the PDF file, used if pdf-file is not specified (= nil)"
+  [pdf-file image-handler & {:keys [start-page end-page dpi ext pathname]
+                             :or {start-page 0
+                                  end-page (Integer/MAX_VALUE)
+                                  dpi 300
+                                  ext "png"}}]
+
+  (let [pdf-file (if pdf-file pdf-file (io/file pathname))
+        pd-document (PDDocument/load pdf-file)
         pdf-renderer (PDFRenderer. pd-document)
         pages (vec (.getPages pd-document))
-        pages-count (count pages)
-        page-range (range-intersection-for-border-pairs [[0 pages-count]
+        page-range (range-intersection-for-border-pairs [[0 (count pages)]
                                                          [start-page end-page]])]
+
     (try
       (doall
         (map
           (fn [page-index]
-            (let [image (.renderImageWithDPI pdf-renderer page-index dpi ImageType/RGB)
-                  image-pathname (str pathname "-" page-index "." ext)]
-              (ImageIOUtil/writeImage image image-pathname dpi)
-              image-pathname))
+            (let [image (.renderImageWithDPI pdf-renderer page-index dpi ImageType/RGB)]
+              (image-handler {:image image
+                              :image-index page-index
+                              :ext ext
+                              :dpi dpi
+                              :base-path (.getAbsolutePath pdf-file)})))
           page-range))
       (finally
         (if (not= pd-document nil) (.close pd-document))))))
