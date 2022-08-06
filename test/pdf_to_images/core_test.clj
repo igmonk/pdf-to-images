@@ -26,4 +26,18 @@
           baos  (ByteArrayOutputStream.)]
       (ImageIOUtil/writeImage img "png" baos 300)
       (.flush baos)
-      (is (java.util.Arrays/equals (.toByteArray baos) byrr)))))
+      (is (java.util.Arrays/equals (.toByteArray baos) byrr))))
+
+  (testing "Image to file"
+    (let [path  "test/pdf_to_images/assets/"
+          ipath (first (pdf-to-images nil image-to-file :pathname (str path "dummy.pdf")))
+          image (ImageIO/read (io/file ipath))
+          img-2 (ImageIO/read (io/file (str path "dummy.png")))
+          baos1 (ByteArrayOutputStream.)
+          baos2 (ByteArrayOutputStream.)]
+      (io/delete-file ipath)
+      (ImageIO/write image "png" baos1)
+      (.flush baos1)
+      (ImageIO/write img-2 "png" baos2)
+      (.flush baos2)
+      (is (java.util.Arrays/equals (.toByteArray baos1) (.toByteArray baos2))))))
