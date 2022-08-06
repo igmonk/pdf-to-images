@@ -35,9 +35,11 @@
           img-2 (ImageIO/read (io/file (str path "dummy.png")))
           baos1 (ByteArrayOutputStream.)
           baos2 (ByteArrayOutputStream.)]
-      (io/delete-file ipath)
-      (ImageIO/write image "png" baos1)
-      (.flush baos1)
-      (ImageIO/write img-2 "png" baos2)
-      (.flush baos2)
-      (is (java.util.Arrays/equals (.toByteArray baos1) (.toByteArray baos2))))))
+      (try
+        (ImageIO/write image "png" baos1)
+        (.flush baos1)
+        (ImageIO/write img-2 "png" baos2)
+        (.flush baos2)
+        (is (java.util.Arrays/equals (.toByteArray baos1) (.toByteArray baos2)))
+        (finally
+          (io/delete-file ipath))))))
