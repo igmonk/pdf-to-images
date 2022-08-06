@@ -6,7 +6,7 @@
            (java.io ByteArrayOutputStream)))
 
 (deftest core-all
-  (testing "From PDF file to image"
+  (testing "Image to image"
     (let [path  "test/pdf_to_images/assets/"
           image (first (pdf-to-images nil image-to-image :pathname (str path "dummy.pdf")))
           img-2 (ImageIO/read (io/file (str path "dummy.png")))
