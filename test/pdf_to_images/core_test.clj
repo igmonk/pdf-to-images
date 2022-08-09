@@ -6,8 +6,8 @@
            [javax.imageio ImageIO]
            (java.io ByteArrayOutputStream)))
 
-(deftest core-all
-  (testing "Image to image"
+(deftest image-to-image-test
+  (testing "Single page PDF"
     (let [path  "test/pdf_to_images/assets/"
           image (first (pdf-to-images nil image-to-image :pathname (str path "dummy.pdf")))
           img-2 (ImageIO/read (io/file (str path "dummy.png")))
@@ -17,18 +17,20 @@
       (.flush baos1)
       (ImageIO/write img-2 "png" baos2)
       (.flush baos2)
-      (is (java.util.Arrays/equals (.toByteArray baos1) (.toByteArray baos2)))))
+      (is (java.util.Arrays/equals (.toByteArray baos1) (.toByteArray baos2))))))
 
-  (testing "Image to byte array"
+(deftest image-to-byte-array-test
+  (testing "Single page PDF"
     (let [path  "test/pdf_to_images/assets/"
           byrr  (first (pdf-to-images nil image-to-byte-array :pathname (str path "dummy.pdf")))
           img   (ImageIO/read (io/file (str path "dummy.png")))
           baos  (ByteArrayOutputStream.)]
       (ImageIOUtil/writeImage img "png" baos 300)
       (.flush baos)
-      (is (java.util.Arrays/equals (.toByteArray baos) byrr))))
+      (is (java.util.Arrays/equals (.toByteArray baos) byrr)))))
 
-  (testing "Image to file"
+(deftest image-to-file-test
+  (testing "Single page PDF"
     (let [path  "test/pdf_to_images/assets/"
           ipath (first (pdf-to-images nil image-to-file :pathname (str path "dummy.pdf")))
           image (ImageIO/read (io/file ipath))
