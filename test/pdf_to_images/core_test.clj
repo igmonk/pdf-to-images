@@ -62,14 +62,47 @@
       (is (every? identity results) true))))
 
 (deftest image-to-byte-array-test
-  (testing "Single page PDF"
-    (let [path  "test/pdf_to_images/assets/"
-          byrr  (first (pdf-to-images nil image-to-byte-array :pathname (str path "dummy.pdf")))
-          img   (ImageIO/read (io/file (str path "dummy.png")))
-          baos  (ByteArrayOutputStream.)]
+  (testing "Convert single page PDF"
+    (let [path "test/pdf_to_images/assets/"
+          byrr (first (pdf-to-images nil image-to-byte-array :pathname (str path "dummy.pdf")))
+          img  (ImageIO/read (io/file (str path "dummy.png")))
+          baos (ByteArrayOutputStream.)]
       (ImageIOUtil/writeImage img "png" baos 300)
       (.flush baos)
-      (is (java.util.Arrays/equals (.toByteArray baos) byrr)))))
+      (is (java.util.Arrays/equals (.toByteArray baos) byrr))))
+
+  (testing "Convert first page from PDF"
+    (let [path "test/pdf_to_images/assets/"
+          byrr (first (pdf-to-images nil image-to-byte-array :pathname (str path "dummy_many.pdf")))
+          img  (ImageIO/read (io/file (str path "dummy_many_p1.png")))
+          baos (ByteArrayOutputStream.)]
+      (ImageIOUtil/writeImage img "png" baos 300)
+      (.flush baos)
+      (is (java.util.Arrays/equals (.toByteArray baos) byrr))))
+
+  (testing "Convert second page from PDF"
+    (let [path "test/pdf_to_images/assets/"
+          byrr (first (pdf-to-images nil image-to-byte-array :pathname (str path "dummy_many.pdf") :start-page 1 :end-page 2))
+          img  (ImageIO/read (io/file (str path "dummy_many_p2.png")))
+          baos (ByteArrayOutputStream.)]
+      (ImageIOUtil/writeImage img "png" baos 300)
+      (.flush baos)
+      (is (java.util.Arrays/equals (.toByteArray baos) byrr))))
+
+  (testing "Convert multiple pages from PDF"
+    (let [path     "test/pdf_to_images/assets/"
+          byrrs     (pdf-to-images nil image-to-byte-array :pathname (str path "dummy_many.pdf") :start-page 0 :end-page 3)
+          byrrs-idx (map-indexed vector byrrs)
+          results   (map (fn [item]
+                           (let [pos  (first item)
+                                 byrr (last item)
+                                 png  (ImageIO/read (io/file (str path "dummy_many_p" (inc pos) ".png")))
+                                 baos (ByteArrayOutputStream.)]
+                             (ImageIOUtil/writeImage png "png" baos 300)
+                             (.flush baos)
+                             (is (java.util.Arrays/equals (.toByteArray baos) byrr))))
+                         byrrs-idx)]
+      (is (every? identity results) true))))
 
 (deftest image-to-file-test
   (testing "Single page PDF"
