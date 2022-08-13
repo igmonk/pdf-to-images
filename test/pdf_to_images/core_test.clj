@@ -8,44 +8,36 @@
 
 (deftest image-to-image-test
   (testing "Convert single page PDF"
-    (let [path  "test/pdf_to_images/assets/"
-          image (first (pdf-to-images nil image-to-image :pathname (str path "dummy.pdf")))
-          img-2 (ImageIO/read (io/file (str path "dummy.png")))
-          baos1 (ByteArrayOutputStream.)
-          baos2 (ByteArrayOutputStream.)]
+    (let [path    "test/pdf_to_images/assets/"
+          results (pdf-to-images nil image-to-image :pathname (str path "dummy.pdf"))
+          image   (first results)
+          img-2   (ImageIO/read (io/file (str path "dummy.png")))
+          baos1   (ByteArrayOutputStream.)
+          baos2   (ByteArrayOutputStream.)]
       (ImageIO/write image "png" baos1)
       (.flush baos1)
       (ImageIO/write img-2 "png" baos2)
       (.flush baos2)
-      (is (java.util.Arrays/equals (.toByteArray baos1) (.toByteArray baos2)))))
-
-  (testing "Convert first page from PDF"
-    (let [path  "test/pdf_to_images/assets/"
-          image (first (pdf-to-images nil image-to-image :pathname (str path "dummy_many.pdf")))
-          img-2 (ImageIO/read (io/file (str path "dummy_many_p1.png")))
-          baos1 (ByteArrayOutputStream.)
-          baos2 (ByteArrayOutputStream.)]
-      (ImageIO/write image "png" baos1)
-      (.flush baos1)
-      (ImageIO/write img-2 "png" baos2)
-      (.flush baos2)
+      (is (= (count results) 1))
       (is (java.util.Arrays/equals (.toByteArray baos1) (.toByteArray baos2)))))
 
   (testing "Convert second page from PDF"
-    (let [path  "test/pdf_to_images/assets/"
-          image (first (pdf-to-images nil image-to-image :pathname (str path "dummy_many.pdf") :start-page 1 :end-page 2))
-          img-2 (ImageIO/read (io/file (str path "dummy_many_p2.png")))
-          baos1 (ByteArrayOutputStream.)
-          baos2 (ByteArrayOutputStream.)]
+    (let [path    "test/pdf_to_images/assets/"
+          results (pdf-to-images nil image-to-image :pathname (str path "dummy_many.pdf") :start-page 1 :end-page 2)
+          image   (first results)
+          img-2   (ImageIO/read (io/file (str path "dummy_many_p2.png")))
+          baos1   (ByteArrayOutputStream.)
+          baos2   (ByteArrayOutputStream.)]
       (ImageIO/write image "png" baos1)
       (.flush baos1)
       (ImageIO/write img-2 "png" baos2)
       (.flush baos2)
+      (is (= (count results) 1))
       (is (java.util.Arrays/equals (.toByteArray baos1) (.toByteArray baos2)))))
 
   (testing "Convert multiple pages from PDF"
     (let [path     "test/pdf_to_images/assets/"
-          images   (pdf-to-images nil image-to-image :pathname (str path "dummy_many.pdf") :start-page 0 :end-page 3)
+          images   (pdf-to-images nil image-to-image :pathname (str path "dummy_many.pdf") :start-page 0 :end-page 2)
           imgs-idx (map-indexed vector images)
           results  (map (fn [item]
                           (let [pos   (first item)
@@ -59,6 +51,26 @@
                             (.flush baos2)
                             (java.util.Arrays/equals (.toByteArray baos1) (.toByteArray baos2))))
                         imgs-idx)]
+      (is (= (count images) 2))
+      (is (every? identity results) true)))
+
+  (testing "Convert all pages from PDF"
+    (let [path     "test/pdf_to_images/assets/"
+          images   (pdf-to-images nil image-to-image :pathname (str path "dummy_many.pdf"))
+          imgs-idx (map-indexed vector images)
+          results  (map (fn [item]
+                          (let [pos   (first item)
+                                img   (last item)
+                                png   (ImageIO/read (io/file (str path "dummy_many_p" (inc pos) ".png")))
+                                baos1 (ByteArrayOutputStream.)
+                                baos2 (ByteArrayOutputStream.)]
+                            (ImageIO/write img "png" baos1)
+                            (.flush baos1)
+                            (ImageIO/write png "png" baos2)
+                            (.flush baos2)
+                            (java.util.Arrays/equals (.toByteArray baos1) (.toByteArray baos2))))
+                        imgs-idx)]
+      (is (= (count images) 3))
       (is (every? identity results) true))))
 
 (deftest image-to-byte-array-test
