@@ -129,7 +129,7 @@
       (is (every? identity results) true))))
 
 (deftest image-to-file-test
-  (testing "Single page PDF"
+  (testing "Convert single page PDF"
     (let [path  "test/pdf_to_images/assets/"
           ipath (first (pdf-to-images nil image-to-file :pathname (str path "dummy.pdf")))
           image (ImageIO/read (io/file ipath))
@@ -143,4 +143,66 @@
         (.flush baos2)
         (is (java.util.Arrays/equals (.toByteArray baos1) (.toByteArray baos2)))
         (finally
-          (io/delete-file ipath))))))
+          (io/delete-file ipath)))))
+
+  (testing "Convert second page from PDF"
+    (let [path  "test/pdf_to_images/assets/"
+          ipath (first (pdf-to-images nil image-to-file :pathname (str path "dummy_many.pdf") :start-page 1 :end-page 2))
+          image (ImageIO/read (io/file ipath))
+          img-2 (ImageIO/read (io/file (str path "dummy_many_p2.png")))
+          baos1 (ByteArrayOutputStream.)
+          baos2 (ByteArrayOutputStream.)]
+      (try
+        (ImageIO/write image "png" baos1)
+        (.flush baos1)
+        (ImageIO/write img-2 "png" baos2)
+        (.flush baos2)
+        (is (java.util.Arrays/equals (.toByteArray baos1) (.toByteArray baos2)))
+        (finally
+          (io/delete-file ipath)))))
+
+  (testing "Convert multiple pages from PDF"
+    (let [path      "test/pdf_to_images/assets/"
+          paths     (pdf-to-images nil image-to-file :pathname (str path "dummy_many.pdf") :start-page 0 :end-page 2)
+          paths-idx (map-indexed vector paths)
+          results   (map (fn [item]
+                           (let [pos   (first item)
+                                 ipath (last item)
+                                 image (ImageIO/read (io/file ipath))
+                                 png   (ImageIO/read (io/file (str path "dummy_many_p" (inc pos) ".png")))
+                                 baos1 (ByteArrayOutputStream.)
+                                 baos2 (ByteArrayOutputStream.)]
+                             (try
+                               (ImageIO/write image "png" baos1)
+                               (.flush baos1)
+                               (ImageIO/write png "png" baos2)
+                               (.flush baos2)
+                               (is (java.util.Arrays/equals (.toByteArray baos1) (.toByteArray baos2)))
+                               (finally
+                                 (io/delete-file ipath)))))
+                         paths-idx)]
+      (is (= (count paths) 2))
+      (is (every? identity results) true)))
+
+  (testing "Convert all pages from PDF"
+    (let [path      "test/pdf_to_images/assets/"
+          paths     (pdf-to-images nil image-to-file :pathname (str path "dummy_many.pdf"))
+          paths-idx (map-indexed vector paths)
+          results   (map (fn [item]
+                           (let [pos   (first item)
+                                 ipath (last item)
+                                 image (ImageIO/read (io/file ipath))
+                                 png   (ImageIO/read (io/file (str path "dummy_many_p" (inc pos) ".png")))
+                                 baos1 (ByteArrayOutputStream.)
+                                 baos2 (ByteArrayOutputStream.)]
+                             (try
+                               (ImageIO/write image "png" baos1)
+                               (.flush baos1)
+                               (ImageIO/write png "png" baos2)
+                               (.flush baos2)
+                               (is (java.util.Arrays/equals (.toByteArray baos1) (.toByteArray baos2)))
+                               (finally
+                                 (io/delete-file ipath)))))
+                         paths-idx)]
+      (is (= (count paths) 3))
+      (is (every? identity results) true))))
