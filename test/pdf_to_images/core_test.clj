@@ -6,10 +6,12 @@
            [javax.imageio ImageIO]
            (java.io ByteArrayOutputStream)))
 
+(def dpi 72)
+
 (deftest image-to-image-test
   (testing "Convert single page PDF"
     (let [path    "test/pdf_to_images/assets/"
-          results (pdf-to-images nil image-to-image :pathname (str path "dummy.pdf"))
+          results (pdf-to-images nil image-to-image :pathname (str path "dummy.pdf") :dpi dpi)
           image   (first results)
           img-2   (ImageIO/read (io/file (str path "dummy.png")))
           baos1   (ByteArrayOutputStream.)
@@ -23,7 +25,7 @@
 
   (testing "Convert second page from PDF"
     (let [path    "test/pdf_to_images/assets/"
-          results (pdf-to-images nil image-to-image :pathname (str path "dummy_many.pdf") :start-page 1 :end-page 2)
+          results (pdf-to-images nil image-to-image :pathname (str path "dummy_many.pdf") :start-page 1 :end-page 2 :dpi dpi)
           image   (first results)
           img-2   (ImageIO/read (io/file (str path "dummy_many_p2.png")))
           baos1   (ByteArrayOutputStream.)
@@ -37,7 +39,7 @@
 
   (testing "Convert multiple pages from PDF"
     (let [path     "test/pdf_to_images/assets/"
-          images   (pdf-to-images nil image-to-image :pathname (str path "dummy_many.pdf") :start-page 0 :end-page 2)
+          images   (pdf-to-images nil image-to-image :pathname (str path "dummy_many.pdf") :start-page 0 :end-page 2 :dpi dpi)
           imgs-idx (map-indexed vector images)
           results  (map (fn [item]
                           (let [pos   (first item)
@@ -56,7 +58,7 @@
 
   (testing "Convert all pages from PDF"
     (let [path     "test/pdf_to_images/assets/"
-          images   (pdf-to-images nil image-to-image :pathname (str path "dummy_many.pdf"))
+          images   (pdf-to-images nil image-to-image :pathname (str path "dummy_many.pdf") :dpi dpi)
           imgs-idx (map-indexed vector images)
           results  (map (fn [item]
                           (let [pos   (first item)
@@ -76,36 +78,36 @@
 (deftest image-to-byte-array-test
   (testing "Convert single page PDF"
     (let [path    "test/pdf_to_images/assets/"
-          results (pdf-to-images nil image-to-byte-array :pathname (str path "dummy.pdf"))
+          results (pdf-to-images nil image-to-byte-array :pathname (str path "dummy.pdf") :dpi dpi)
           byrr    (first results)
           img     (ImageIO/read (io/file (str path "dummy.png")))
           baos    (ByteArrayOutputStream.)]
-      (ImageIOUtil/writeImage img "png" baos 300)
+      (ImageIOUtil/writeImage img "png" baos dpi)
       (.flush baos)
       (is (= (count results) 1))
       (is (java.util.Arrays/equals (.toByteArray baos) byrr))))
 
   (testing "Convert second page from PDF"
     (let [path    "test/pdf_to_images/assets/"
-          results (pdf-to-images nil image-to-byte-array :pathname (str path "dummy_many.pdf") :start-page 1 :end-page 2)
+          results (pdf-to-images nil image-to-byte-array :pathname (str path "dummy_many.pdf") :start-page 1 :end-page 2 :dpi dpi)
           byrr    (first results)
           img     (ImageIO/read (io/file (str path "dummy_many_p2.png")))
           baos    (ByteArrayOutputStream.)]
-      (ImageIOUtil/writeImage img "png" baos 300)
+      (ImageIOUtil/writeImage img "png" baos dpi)
       (.flush baos)
       (is (= (count results) 1))
       (is (java.util.Arrays/equals (.toByteArray baos) byrr))))
 
   (testing "Convert multiple pages from PDF"
     (let [path     "test/pdf_to_images/assets/"
-          byrrs     (pdf-to-images nil image-to-byte-array :pathname (str path "dummy_many.pdf") :start-page 0 :end-page 2)
+          byrrs     (pdf-to-images nil image-to-byte-array :pathname (str path "dummy_many.pdf") :start-page 0 :end-page 2 :dpi dpi)
           byrrs-idx (map-indexed vector byrrs)
           results   (map (fn [item]
                            (let [pos  (first item)
                                  byrr (last item)
                                  png  (ImageIO/read (io/file (str path "dummy_many_p" (inc pos) ".png")))
                                  baos (ByteArrayOutputStream.)]
-                             (ImageIOUtil/writeImage png "png" baos 300)
+                             (ImageIOUtil/writeImage png "png" baos dpi)
                              (.flush baos)
                              (is (java.util.Arrays/equals (.toByteArray baos) byrr))))
                          byrrs-idx)]
@@ -114,14 +116,14 @@
 
   (testing "Convert all pages from PDF"
     (let [path     "test/pdf_to_images/assets/"
-          byrrs     (pdf-to-images nil image-to-byte-array :pathname (str path "dummy_many.pdf"))
+          byrrs     (pdf-to-images nil image-to-byte-array :pathname (str path "dummy_many.pdf") :dpi dpi)
           byrrs-idx (map-indexed vector byrrs)
           results   (map (fn [item]
                            (let [pos  (first item)
                                  byrr (last item)
                                  png  (ImageIO/read (io/file (str path "dummy_many_p" (inc pos) ".png")))
                                  baos (ByteArrayOutputStream.)]
-                             (ImageIOUtil/writeImage png "png" baos 300)
+                             (ImageIOUtil/writeImage png "png" baos dpi)
                              (.flush baos)
                              (is (java.util.Arrays/equals (.toByteArray baos) byrr))))
                          byrrs-idx)]
@@ -131,7 +133,7 @@
 (deftest image-to-file-test
   (testing "Convert single page PDF"
     (let [path  "test/pdf_to_images/assets/"
-          ipath (first (pdf-to-images nil image-to-file :pathname (str path "dummy.pdf")))
+          ipath (first (pdf-to-images nil image-to-file :pathname (str path "dummy.pdf") :dpi dpi))
           image (ImageIO/read (io/file ipath))
           img-2 (ImageIO/read (io/file (str path "dummy.png")))
           baos1 (ByteArrayOutputStream.)
@@ -147,7 +149,7 @@
 
   (testing "Convert second page from PDF"
     (let [path  "test/pdf_to_images/assets/"
-          ipath (first (pdf-to-images nil image-to-file :pathname (str path "dummy_many.pdf") :start-page 1 :end-page 2))
+          ipath (first (pdf-to-images nil image-to-file :pathname (str path "dummy_many.pdf") :start-page 1 :end-page 2 :dpi dpi))
           image (ImageIO/read (io/file ipath))
           img-2 (ImageIO/read (io/file (str path "dummy_many_p2.png")))
           baos1 (ByteArrayOutputStream.)
@@ -163,7 +165,7 @@
 
   (testing "Convert multiple pages from PDF"
     (let [path      "test/pdf_to_images/assets/"
-          paths     (pdf-to-images nil image-to-file :pathname (str path "dummy_many.pdf") :start-page 0 :end-page 2)
+          paths     (pdf-to-images nil image-to-file :pathname (str path "dummy_many.pdf") :start-page 0 :end-page 2 :dpi dpi)
           paths-idx (map-indexed vector paths)
           results   (map (fn [item]
                            (let [pos   (first item)
@@ -186,7 +188,7 @@
 
   (testing "Convert all pages from PDF"
     (let [path      "test/pdf_to_images/assets/"
-          paths     (pdf-to-images nil image-to-file :pathname (str path "dummy_many.pdf"))
+          paths     (pdf-to-images nil image-to-file :pathname (str path "dummy_many.pdf") :dpi dpi)
           paths-idx (map-indexed vector paths)
           results   (map (fn [item]
                            (let [pos   (first item)
