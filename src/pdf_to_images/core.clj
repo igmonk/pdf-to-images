@@ -31,7 +31,7 @@
 (defn image-to-file
   [{image :image image-index :image-index ext :ext dpi :dpi quality :quality base-path :base-path}]
   (let [image-pathname (str base-path "-" image-index "." ext)]
-    (ImageIOUtil/writeImage image image-pathname dpi quality)
+    (ImageIOUtil/writeImage image image-pathname dpi)
     image-pathname))
 
 (defn pdf-to-images
