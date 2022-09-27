@@ -55,6 +55,7 @@ With-options usage example:
                                   :start-page 0
                                   :end-page 1
                                   :dpi 100
+                                  :quality 1
                                   :ext "jpg")]
   (prn (str "Images count: " (count image-paths)))
   (map prn image-paths))
