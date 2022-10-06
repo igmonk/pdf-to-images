@@ -31,8 +31,12 @@
 (defn image-to-file
   [{image :image image-index :image-index ext :ext dpi :dpi quality :quality base-path :base-path}]
   (let [image-pathname (str base-path "-" image-index "." ext)]
-    (ImageIOUtil/writeImage image image-pathname dpi)
-    image-pathname))
+    (with-open [baos (ByteArrayOutputStream.)
+                out  (io/output-stream (io/file image-pathname))]
+      (ImageIOUtil/writeImage image ext baos dpi quality)
+      (.flush baos)
+      (.write out (.toByteArray baos))
+      image-pathname)))
 
 (defn pdf-to-images
   "Converts a page range of a PDF document to images using one of the defined image handlers

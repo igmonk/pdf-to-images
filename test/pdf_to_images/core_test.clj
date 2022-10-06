@@ -90,7 +90,7 @@
       (is (every? identity results) true))))
 
 (deftest image-to-byte-array-test
-  (testing "Convert single page PDF"
+  (testing "Convert single page PDF using quality"
     (let [results (pdf-to-images nil
                                  image-to-byte-array
                                  :pathname (str path "dummy.pdf")
@@ -100,6 +100,19 @@
           img     (ImageIO/read (io/file (str path "dummy.png")))
           baos    (ByteArrayOutputStream.)]
       (ImageIOUtil/writeImage img "png" baos dpi quality)
+      (.flush baos)
+      (is (= (count results) 1))
+      (is (java.util.Arrays/equals (.toByteArray baos) byrr))))
+
+  (testing "Convert single page PDF not using quality"
+    (let [results (pdf-to-images nil
+                                 image-to-byte-array
+                                 :pathname (str path "dummy.pdf")
+                                 :dpi dpi)
+          byrr    (first results)
+          img     (ImageIO/read (io/file (str path "dummy.png")))
+          baos    (ByteArrayOutputStream.)]
+      (ImageIOUtil/writeImage img "png" baos dpi)
       (.flush baos)
       (is (= (count results) 1))
       (is (java.util.Arrays/equals (.toByteArray baos) byrr))))
@@ -161,20 +174,45 @@
       (is (every? identity results) true))))
 
 (deftest image-to-file-test
-  (testing "Convert single page PDF"
+  (testing "Convert single page PDF using quality"
+    (let [ipath (first (pdf-to-images nil
+                                      image-to-file
+                                      :pathname (str path "dummy.pdf")
+                                      :dpi dpi
+                                      :quality quality))
+          file1 (io/file ipath)
+          file2 (io/file (str path "dummy.png"))
+          imag1 (ImageIO/read file1)
+          imag2 (ImageIO/read file2)
+          baos1 (ByteArrayOutputStream.)
+          baos2 (ByteArrayOutputStream.)]
+      (try
+        (ImageIO/write imag1 "png" baos1)
+        (.flush baos1)
+        (ImageIO/write imag2 "png" baos2)
+        (.flush baos2)
+        (is (= (.length file1) (.length file2)))
+        (is (java.util.Arrays/equals (.toByteArray baos1) (.toByteArray baos2)))
+        (finally
+          (io/delete-file ipath)))))
+
+  (testing "Convert single page PDF not using quality"
     (let [ipath (first (pdf-to-images nil
                                       image-to-file
                                       :pathname (str path "dummy.pdf")
                                       :dpi dpi))
-          image (ImageIO/read (io/file ipath))
-          img-2 (ImageIO/read (io/file (str path "dummy.png")))
+          file1 (io/file ipath)
+          file2 (io/file (str path "dummy_big.png"))
+          imag1 (ImageIO/read file1)
+          imag2 (ImageIO/read file2)
           baos1 (ByteArrayOutputStream.)
           baos2 (ByteArrayOutputStream.)]
       (try
-        (ImageIO/write image "png" baos1)
+        (ImageIO/write imag1 "png" baos1)
         (.flush baos1)
-        (ImageIO/write img-2 "png" baos2)
+        (ImageIO/write imag2 "png" baos2)
         (.flush baos2)
+        (is (= (.length file1) (.length file2)))
         (is (java.util.Arrays/equals (.toByteArray baos1) (.toByteArray baos2)))
         (finally
           (io/delete-file ipath)))))
