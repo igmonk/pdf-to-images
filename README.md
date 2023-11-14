@@ -71,7 +71,7 @@ Built-in image handlers
 
 ## License
 
-Copyright © 2016 Igor Moiseyenko
-Copyright © 2023 Roberto Oliveros
+* Copyright © 2016 Igor Moiseyenko
+* Copyright © 2023 Roberto Oliveros
 
 Distributed under the Eclipse Public License version 1.0.
