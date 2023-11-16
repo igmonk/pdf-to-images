@@ -1,8 +1,8 @@
-(defproject pdf-to-images "0.1.2"
+(defproject org.clojars.roboli/pdf-2-images "0.1.2"
 
   :description "Clojure wrapper for the PDFBox that converts a page range of a PDF document to images."
 
-  :url "https://github.com/igor-moiseyenko/pdf-to-images"
+  :url "https://github.com/roboli/pdf-2-images"
 
   :license {:name "Eclipse Public License version 1.0"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
